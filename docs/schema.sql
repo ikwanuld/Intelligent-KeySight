@@ -1,0 +1,1 @@
+-- The schema now lives in api/install.sql (schema + starting data).

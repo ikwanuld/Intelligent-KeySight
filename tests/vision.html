@@ -1,0 +1,35 @@
+<!doctype html><meta charset="utf-8"><title>vision test</title>
+<script src="../vendor/tesseract/tesseract.min.js"></script>
+<script type="module">
+import { DEFAULT_CONFIG } from '../js/core/defaults.js';
+import { createEngine } from '../js/ocr/engine.js';
+import '../js/ocr/tesseract-engine.js';
+import { ScanPipeline } from '../js/scanner/pipeline.js';
+import { Tracker } from '../js/tracking/tracker.js';
+
+const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+window.runVision = async () => {
+  const manifest = await (await fetch('fixtures/manifest.json')).json();
+  const engine = createEngine('tesseract', { base: new URL('../vendor/tesseract/', location.href).href }); await engine.init();
+  const out = [];
+  for (const m of manifest) {
+    const img = await load(`fixtures/${m.name}.png`);
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    c.getContext('2d').drawImage(img, 0, 0);
+    c.videoWidth = c.width; c.videoHeight = c.height; c.readyState = 4;
+    const results = [];
+    const p = new ScanPipeline({ video: c, engine, tracker: new Tracker(() => DEFAULT_CONFIG), getConfig: () => DEFAULT_CONFIG,
+      onResults: (r) => results.push(...r), onError: (e) => results.push({ error: String(e) }) });
+    // Continuous mode: simulate up to 8 passes over the same still frame.
+    p.running = true; let passes = 0;
+    for (; passes < 8 && !results.length; passes++) { const a = p._analyse(); p.lastQuality = a.q; await p._ocrPass(a.regions); }
+    const a = p._analyse();
+    const multi = await p.multiScan();
+    out.push({ name: m.name, expect: m.expect, unreadable: !!m.unreadable, regions: a.regions.length, lighting: a.q.lighting,
+      single: results.map((r) => r.error || `${r.obs.raw}${r.obs.assess.suggestion ? '→' + r.obs.assess.suggestion.suggestion : ''} [${r.status} ${Math.round(r.conf)}]`),
+      passes, ms: Math.round(p.avgOcrMs), multi: multi.map((c) => `${c.raw} [${c.status} ${Math.round(c.conf)}]`) });
+  }
+  await engine.terminate();
+  return out;
+};
+</script>

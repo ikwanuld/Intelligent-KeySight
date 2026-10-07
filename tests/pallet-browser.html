@@ -1,0 +1,46 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Pallet reader in the browser</title>
+<p>Runs the pallet reader exactly as the app does (Web Worker + WebAssembly) on still photos. Driven by tests/pallet-browser.mjs.</p>
+<script type="module">
+import { PalletEngine } from '../js/pallet/client.js';
+import { DEFAULT_CONFIG } from '../js/core/defaults.js';
+
+let engine = null;
+window.palletTest = {
+  async load(threads = 1, session = {}) {
+    engine = new PalletEngine({ getConfig: () => DEFAULT_CONFIG, threads, session });
+    const seen = [];
+    engine.onProgress((p) => seen.push(p));
+    const t0 = performance.now();
+    await engine.init();
+    return { loadMs: performance.now() - t0, info: engine.info, isolated: self.crossOriginIsolated,
+      downloaded: seen.some((p) => p.downloading), total: seen.length ? seen[seen.length - 1].total : 0 };
+  },
+  /** Start-up failures: what the caller gets, and that a later attempt starts from scratch. */
+  async failures() {
+    const out = {};
+    const bad = new PalletEngine({ getConfig: () => DEFAULT_CONFIG, threads: 2, session: { executionProviders: ['no-such-provider'] } });
+    out.badOptions = await bad.init().then(() => 'started', (e) => `${e.name}:${e.code}`);
+    out.threadsAfterFailure = bad.threads;                       // it was tried again without threads
+    bad.session = {};
+    out.retry = await bad.init().then((e) => `started with ${e.info.threads} thread`, (e) => `${e.code}: ${e.message}`);
+    bad.terminate();
+    const slow = new PalletEngine({ getConfig: () => DEFAULT_CONFIG, startTimeoutMs: 1 });
+    out.timeout = await slow.init().then(() => 'started', (e) => `${e.code}: ${e.message}`);
+    out.workerGone = slow.worker === null;
+    return out;
+  },
+  async read(url, options = {}) {
+    const img = new Image(); img.src = url; await img.decode();
+    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+    const t0 = performance.now();
+    const res = await engine.read(g.getImageData(0, 0, c.width, c.height), { options });
+    return { ms: performance.now() - t0, detMs: res.detMs, recMs: res.recMs, recCalls: res.recCalls, lines: res.lines,
+      candidates: res.candidates.map((k) => ({ raw: k.raw, status: k.status, partial: k.partial, solid: k.solid, conf: k.conf,
+        suggestion: k.assess.suggestion?.suggestion || null, reasons: [...k.assess.best.reasons, ...k.reviewReasons],
+        evidence: k.evidenceImage ? [k.evidenceImage.width, k.evidenceImage.height] : null })) };
+  },
+};
+</script>

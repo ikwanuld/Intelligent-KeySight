@@ -1,0 +1,20 @@
+{
+ "p-000": [{"id":"PAG22419R7","level":"damaged","note":"rotated 90 deg, one digit gouged, rivets"}],
+ "p-001": [{"id":"PAJ0606TRA","level":"hard","note":"stamped dark on bare aluminium, 4-digit serial, 3-letter owner"}],
+ "p-002": [{"id":"PAG61568TG","level":"hard","note":"outline font on purple"}],
+ "p-003": [{"id":"PMC91026R7","level":"hard","note":"upside down, thin engraving"}],
+ "p-004": [{"id":"PAG63631R7","level":"hard","note":"embossed, low contrast, tilted"}],
+ "p-005": [{"id":"PMC82529R7","level":"clear","note":"scratch across C"},{"id":"PMC82399R7","level":"optional","note":"blurred, embossed"}],
+ "p-006": [{"id":"PMC81465R7","level":"clear"},{"id":"PMC15880R9","level":"clear"},{"id":"PMC27257R9","level":"clear","note":"scratched"},{"id":"PMC82529R7","level":"clear"},{"id":"PMC82399R7","level":"optional","note":"faded"}],
+ "p-007": [{"id":"PMC82399R7","level":"hard","note":"embossed on faded red"}],
+ "p-008": [{"id":"PMC28227R9","level":"clear","note":"scratch through digits"}],
+ "p-009": [{"id":"PAG70229R7","level":"clear"}],
+ "p-010": [{"id":"PAG21824R7","level":"clear","note":"rivets between groups, worn R7"}],
+ "p-011": [{"id":"PAG71689R7","level":"clear"}],
+ "p-012": [{"id":"PMC26596R9","level":"clear"},{"id":"PMC29725R9","level":"clear"}],
+ "p-013": [{"id":"PAG70403R7","level":"clear"}],
+ "p-014": [{"id":"PMC10694R9","level":"clear","note":"low resolution, dark on red"}],
+ "p-015": [{"id":"PAG65583R7","level":"hard","note":"embossed, P touches frame edge"},{"id":"PAG71918C6","level":"clear","note":"rivets, dark plate"},{"id":"PAG74264C6","level":"clear","note":"wide spacing"}],
+ "p-016": [{"id":"PMC26596R9","level":"clear"},{"id":"PMC29725R9","level":"clear"}],
+ "p-017": [{"id":"PAG32048R7","level":"clear","note":"rivets"}]
+}

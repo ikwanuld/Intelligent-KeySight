@@ -1,0 +1,17 @@
+{
+  "name": "uld-scanner",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node tests/serve.mjs 8766",
+    "test": "node --test tests/*.test.mjs",
+    "test:vision": "node tests/run_vision.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "sw": "node tools/update-sw.mjs",
+    "test:e2e:pallet": "node tests/e2e-pallet.mjs",
+    "pallet:eval": "node tests/pallet-eval.mjs",
+    "pallet:stress": "node tests/pallet-stress.mjs",
+    "pallet:browser": "node tests/pallet-browser.mjs"
+  }
+}
